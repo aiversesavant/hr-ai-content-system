@@ -40,17 +40,23 @@ def generate_answer(results):
         return "No results found."
 
     top_result = results[0]
+    text = top_result["text"]
+    score = top_result["score"]
+    source = top_result["metadata"].get("title", "HR Document")
 
-    if top_result["score"] < SIMILARITY_THRESHOLD:
+    if score < SIMILARITY_THRESHOLD:
         return "No confident answer found in the HR knowledge base."
 
-    text = top_result["text"]
-    short_answer = text.split(".")[0].strip()
+    if score < 0.30:
+        return "This question appears to be outside the HR knowledge base. Please ask an HR-related question."
+
+    sentences = [s.strip() for s in text.split(".") if s.strip()]
+    short_answer = ". ".join(sentences[:2]).strip()
 
     return (
         f"Answer: {short_answer}\n\n"
-        f"Source: {top_result['metadata'].get('title', 'HR Document')}\n"
-        f"Confidence: {top_result['score']:.2f}"
+        f"Source: {source}\n"
+        f"Confidence: {score:.2f}"
     )
 
 
