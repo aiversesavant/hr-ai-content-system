@@ -1,12 +1,11 @@
 ---
-
 title: HR AI Content System
-emoji: 🤖
+emoji: "🤖"
 colorFrom: blue
 colorTo: green
 sdk: gradio
 app_file: app.py
-----------------
+---
 
 # 🤖 HR AI Content Optimization System
 
