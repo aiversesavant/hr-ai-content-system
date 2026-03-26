@@ -1,3 +1,4 @@
+from pipeline.governance import apply_rbac
 from pipeline.ingestion import load_documents
 from pipeline.chunking import chunk_text
 from pipeline.metadata import add_metadata
@@ -28,7 +29,7 @@ def run_pipeline_and_query(query):
 if __name__ == "__main__":
     query = "What is the parental leave policy?"
     results = run_pipeline_and_query(query)
-
+    results = apply_rbac(results, role="employee")
     for r in results:
         print("\n--- RESULT ---")
         print("Score:", r["score"])
