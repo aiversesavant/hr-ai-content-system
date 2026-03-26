@@ -9,4 +9,10 @@ app_file: app.py
 
 # HR AI Content System
 
-AI-ready HR content pipeline with retrieval, governance, and evaluation.
+AI-ready HR content pipeline with:
+- ingestion
+- chunking
+- metadata tagging
+- embeddings + FAISS retrieval
+- governance (PII redaction + RBAC)
+- evaluation with golden questions
