@@ -1,3 +1,4 @@
+from pipeline.evaluation import evaluate_system
 from pipeline.governance import apply_rbac
 from pipeline.ingestion import load_documents
 from pipeline.chunking import chunk_text
@@ -27,11 +28,23 @@ def run_pipeline_and_query(query):
     return results
 
 if __name__ == "__main__":
+    print("=== RUNNING SAMPLE QUERY ===")
     query = "What is the parental leave policy?"
     results = run_pipeline_and_query(query)
     results = apply_rbac(results, role="employee")
+
     for r in results:
         print("\n--- RESULT ---")
         print("Score:", r["score"])
         print("Metadata:", r["metadata"])
         print("Text:", r["text"])
+
+    print("\n=== RUNNING EVALUATION ===")
+    eval_results, accuracy = evaluate_system(run_pipeline_and_query)
+
+    for e in eval_results:
+        print("\nQuestion:", e["question"])
+        print("Expected:", e["expected"])
+        print("Correct:", e["correct"])
+
+    print(f"\nOverall Accuracy: {accuracy * 100:.2f}%")
