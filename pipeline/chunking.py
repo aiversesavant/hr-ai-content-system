@@ -1,9 +1,17 @@
-def chunk_text(text, chunk_size=50):
+def chunk_text(text):
+    sections = [s.strip() for s in text.split("\n\n") if s.strip()]
     chunks = []
-    words = text.split()
 
-    for i in range(0, len(words), chunk_size):
-        chunk = " ".join(words[i:i + chunk_size])
-        chunks.append(chunk)
+    current_chunk = ""
+    for section in sections:
+        if len(current_chunk) + len(section) < 300:
+            current_chunk += section + "\n\n"
+        else:
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            current_chunk = section + "\n\n"
+
+    if current_chunk:
+        chunks.append(current_chunk.strip())
 
     return chunks

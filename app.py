@@ -9,9 +9,12 @@ from pipeline.governance import apply_rbac
 from pipeline.evaluation import evaluate_system
 
 
+SIMILARITY_THRESHOLD = 0.20
+
+
 def retrieve_results(query, role="employee"):
     text = load_documents("data/sample_hr_docs.txt")
-    chunks = chunk_text(text, chunk_size=50)
+    chunks = chunk_text(text)
     enriched = add_metadata(chunks)
 
     embeddings = generate_embeddings(enriched)
@@ -32,21 +35,28 @@ def retrieve_results(query, role="employee"):
     return results
 
 
-def format_results(results):
-    output = ""
-    for r in results:
-        output += (
-            f"Score: {r['score']:.4f}\n"
-            f"Metadata: {r['metadata']}\n"
-            f"Text: {r['text']}\n"
-            f"{'-' * 50}\n"
-        )
-    return output
+def generate_answer(results):
+    if not results:
+        return "No results found."
+
+    top_result = results[0]
+
+    if top_result["score"] < SIMILARITY_THRESHOLD:
+        return "No confident answer found in the HR knowledge base."
+
+    text = top_result["text"]
+    short_answer = text.split(".")[0].strip()
+
+    return (
+        f"Answer: {short_answer}\n\n"
+        f"Source: {top_result['metadata'].get('title', 'HR Document')}\n"
+        f"Confidence: {top_result['score']:.2f}"
+    )
 
 
 def process_and_query(query, role):
     results = retrieve_results(query, role=role)
-    return format_results(results)
+    return generate_answer(results)
 
 
 def run_evaluation():
@@ -80,7 +90,7 @@ with gr.Blocks() as demo:
             value="employee",
             label="User Role"
         )
-        query_output = gr.Textbox(label="Retrieved Results", lines=20)
+        query_output = gr.Textbox(label="Answer", lines=15)
         query_btn = gr.Button("Search")
 
         query_btn.click(
