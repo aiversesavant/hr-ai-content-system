@@ -13,6 +13,6 @@ AI-ready HR content pipeline with:
 - ingestion
 - chunking
 - metadata tagging
-- embeddings + FAISS retrieval
+- semantic retrieval
 - governance (PII redaction + RBAC)
 - evaluation with golden questions

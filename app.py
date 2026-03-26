@@ -4,7 +4,7 @@ from pipeline.ingestion import load_documents
 from pipeline.chunking import chunk_text
 from pipeline.metadata import add_metadata
 from pipeline.embeddings import generate_embeddings, model
-from pipeline.retrieval import build_faiss_index, search_index
+from pipeline.retrieval import build_index, search_index
 from pipeline.governance import apply_rbac
 from pipeline.evaluation import evaluate_system
 
@@ -15,15 +15,15 @@ def retrieve_results(query, role="employee"):
     enriched = add_metadata(chunks)
 
     embeddings = generate_embeddings(enriched)
-    index = build_faiss_index(embeddings)
+    index = build_index(embeddings)
 
     query_embedding = model.encode(query)
-    distances, indices = search_index(query_embedding, index, top_k=3)
+    scores, indices = search_index(query_embedding, index, top_k=3)
 
     results = []
-    for dist, idx in zip(distances, indices):
+    for score, idx in zip(scores, indices):
         results.append({
-            "score": float(dist),
+            "score": float(score),
             "text": enriched[idx]["text"],
             "metadata": enriched[idx]["metadata"]
         })
@@ -39,7 +39,7 @@ def format_results(results):
             f"Score: {r['score']:.4f}\n"
             f"Metadata: {r['metadata']}\n"
             f"Text: {r['text']}\n"
-            f"{'-'*50}\n"
+            f"{'-' * 50}\n"
         )
     return output
 
@@ -60,7 +60,7 @@ def run_evaluation():
             f"Question: {r['question']}\n"
             f"Expected: {r['expected']}\n"
             f"Correct: {r['correct']}\n"
-            f"{'-'*50}\n"
+            f"{'-' * 50}\n"
         )
 
     output += f"\nOverall Accuracy: {accuracy * 100:.2f}%"
