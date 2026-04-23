@@ -1,3 +1,16 @@
+venv/
+.venv/
 __pycache__/
 *.pyc
 .DS_Store
+
+.env
+.env.local
+.env.*.local
+
+logs/
+
+.streamlit/
+.pytest_cache/
+.coverage
+htmlcov/
